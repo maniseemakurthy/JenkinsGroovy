@@ -1,11 +1,27 @@
 node {
     stage('SCM') {
-	echo 'Gathering code from version control'
+    	echo 'Gathering code from version control'
+	git branch: '${branch}', url: 'https://github.com/FeynmanFan/JenkinsGroovy.git'
     }
     stage('Build') {
+	try{
         echo 'Building....'
+	sh 'dotnet --version'
+	sh "donet build ConsoleApp1"
+	echo 'Building new feature'
+	releasenotes()
     }
-    stage('Test') {
+	catch(ex)
+	{
+	echo "Something went wrong"
+	echo ex.toString();
+	currentBuild.result='FAILURE'
+	}
+	finally{
+	//cleanip
+	}
+  }
+	stage('Test') {
         echo 'Testing....'
     }
     stage('Deploy') {
